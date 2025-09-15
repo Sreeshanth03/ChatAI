@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { FaPlus, FaPaperPlane, FaBars, FaTrash } from "react-icons/fa";
+import { FaPlus, FaPaperPlane, FaBars, FaTrash, FaUser, FaMicrophone } from "react-icons/fa";
 import { RiRobot2Line, RiRobot3Fill } from "react-icons/ri";
 import { TbRobot } from "react-icons/tb";
 import "./ChatWindow.css";
+
 const API_KEY = import.meta.env.VITE_API_KEY;
 const API_URL = import.meta.env.VITE_API_URL;
+
 // Dummy chat list
 const dummyChats = [
   { id: 1, title: "What's AI?", lastMessage: "Hello!", time: "10:30 AM" },
@@ -44,21 +46,19 @@ const chatHistories = {
     { text: "Great, how are you doing?", sender: "user" },
     { text: "I’m doing well, thank you for asking!", sender: "ai" },
   ],
-
   3: [
     { text: "Let’s start a random conversation.", sender: "user" },
     { text: "Sounds fun! Do you know what AI is?", sender: "ai" },
     { text: "Kind of, but can you explain?", sender: "user" },
     { text: "Sure! AI is the simulation of human intelligence in machines.", sender: "ai" },
   ],
-
   4: [
     { text: "Hello!", sender: "user" },
     { text: "Hi! How’s your day going?", sender: "ai" },
     { text: "Pretty good, just relaxing.", sender: "user" },
     { text: "That’s nice! Random conversations are fun sometimes.", sender: "ai" },
   ],
-
+  
   5: [
     { text: "How are you?", sender: "user" },
     { text: "I’m doing great! How about you?", sender: "ai" },
@@ -144,23 +144,20 @@ const chatHistories = {
     { text: "Following up on the discussion.", sender: "user" },
     { text: "Yes, I remember. Do you want me to summarize?", sender: "ai" },
   ],
-
 };
 
 const ChatWindow = () => {
-  const [messages, setMessages] = useState([]); 
-  const [input, setInput] = useState(""); // user input
-  const [loading, setLoading] = useState(false); // loading state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // mobile sidebar
-  const [chats, setChats] = useState(dummyChats); // chat list
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState(""); 
+  const [loading, setLoading] = useState(false); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+  const [chats, setChats] = useState(dummyChats); 
   const chatEndRef = useRef(null);
 
-  // Scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Send message
   const sendMessage = async () => {
     if (!input.trim()) return;
     setLoading(true);
@@ -170,7 +167,7 @@ const ChatWindow = () => {
 
     try {
       const response = await axios.post(
-             `${API_URL}?key=${API_KEY}`,
+        `${API_URL}?key=${API_KEY}`,
         { contents: [{ parts: [{ text: input }] }] },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -190,19 +187,17 @@ const ChatWindow = () => {
     setInput("");
   };
 
-
   const handleNewChat = () => {
     setMessages([]);
     setInput("");
     if (window.innerWidth < 768) setIsSidebarOpen(false);
   };
 
-
   const handleSummarize = () => {
     if (messages.length === 0) return;
 
     const summary = messages
-      .map((msg, idx) => `${msg.sender === "user" ? "User" : "AI"}: ${msg.text}`)
+      .map((msg) => `${msg.sender === "user" ? "User" : "AI"}: ${msg.text}`)
       .join(" | ");
 
     setMessages((prev) => [
@@ -225,7 +220,6 @@ const ChatWindow = () => {
     ]);
   };
 
-  // Toggle sidebar
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const loadChat = (chatId) => {
@@ -234,7 +228,6 @@ const ChatWindow = () => {
     if (window.innerWidth < 768) setIsSidebarOpen(false);
   };
 
- 
   const deleteChat = (chatId, e) => {
     e.stopPropagation();
     setChats(chats.filter(chat => chat.id !== chatId));
@@ -242,8 +235,7 @@ const ChatWindow = () => {
 
   return (
     <div className="app-container">
-    
-           <button className="mobile-menu-btn" onClick={toggleSidebar}>
+      <button className="mobile-menu-btn" onClick={toggleSidebar}>
         <FaBars />
       </button>
 
@@ -280,17 +272,16 @@ const ChatWindow = () => {
         </ul>
       </div>
 
- 
       {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
 
       {/* Main Chat */}
       <div className="chat-main">
-        <h2 className="chat-header">Smart Team Chat AI <RiRobot2Line  /></h2>
+        <h2 className="chat-header">Smart Team Chat AI <RiRobot2Line /></h2>
 
         {/* AI Buttons */}
         <div className="ai-buttons">
           <button className="ai-btn" onClick={handleSummarize}>
-            Summarize Thread <TbRobot  />
+            Summarize Thread <TbRobot />
           </button>
           <button className="ai-btn" onClick={handleSmartReply}>
             Smart Reply Suggestion
@@ -312,7 +303,15 @@ const ChatWindow = () => {
               key={idx}
               className={`chat-bubble ${msg.sender === "user" ? "user" : "ai"} animate-message`}
             >
-              {msg.text}
+              {msg.sender === "user" ? (
+                <>
+                  <FaUser className="msg-icon" /> {msg.text}
+                </>
+              ) : (
+                <>
+                  <RiRobot2Line className="msg-icon" /> {msg.text}
+                </>
+              )}
             </div>
           ))}
 
@@ -339,6 +338,9 @@ const ChatWindow = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
+          <button className="voice-btn" title="Voice Input">
+            <FaMicrophone />
+          </button>
           <button className="chat-send-btn" onClick={sendMessage} disabled={loading}>
             <FaPaperPlane />
           </button>
