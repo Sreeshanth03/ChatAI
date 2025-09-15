@@ -253,7 +253,8 @@ import { FaPlus, FaPaperPlane, FaBars, FaTrash } from "react-icons/fa";
 import { RiRobot2Line, RiRobot3Fill } from "react-icons/ri";
 import { TbRobot } from "react-icons/tb";
 import "./ChatWindow.css";
-
+const API_KEY = import.meta.env.VITE_API_KEY;
+const API_URL = import.meta.env.VITE_API_URL;
 // Dummy chat list
 const dummyChats = [
   { id: 1, title: "What's AI?", lastMessage: "Hello!", time: "10:30 AM" },
@@ -418,7 +419,7 @@ const ChatWindow = () => {
 
     try {
       const response = await axios.post(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyBc5QYqlanv1zGCdO-MRgPtZ-AAUYur0Xo",
+             `${API_URL}?key=${API_KEY}`,
         { contents: [{ parts: [{ text: input }] }] },
         { headers: { "Content-Type": "application/json" } }
       );
