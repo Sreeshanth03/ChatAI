@@ -171,6 +171,7 @@ const ChatWindow = () => {
         { contents: [{ parts: [{ text: input }] }] },
         { headers: { "Content-Type": "application/json" } }
       );
+      console.log(response)
       const text =
         response.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
         "No response from model";
